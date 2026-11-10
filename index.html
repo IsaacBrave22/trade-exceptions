@@ -3,164 +3,295 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Every open NBA trade exception, and how much of it a team can actually use. By Isaac Braverman.">
+<meta name="description" content="Every open NBA trade exception, how much of it a team can actually use, and when it expires. By Isaac Braverman.">
 <title>Trade Exception Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@500;700;800&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=Kalam:wght@400;700&display=swap">
 <style>
 :root{
-  --bg:#ffffff; --ink:#111111; --sub:#5b5b5b; --mute:#8f8f8f; --line:#e6e6e6; --panel:#f5f5f5; --hover:#efefef;
-  --pen:#e8432e; --bar:#d4d4d4;
-  --display:'Roboto Condensed','Arial Narrow',Arial,sans-serif; --body:'Inter',system-ui,-apple-system,sans-serif; --hand:'Caveat','Comic Sans MS',cursive;
+  --paper:#f7f8fa; --ink:#0f1f3d; --sub:#4a5672; --mute:#8a93a6; --rule:#d9dde5; --wash:#eceff4;
+  --navy:#1d428a; --wood:#d8b583; --frozen:#b9bfcb; --red:#c8102e;
+  --cond:'Barlow Condensed','Arial Narrow',sans-serif; --body:'Barlow',system-ui,sans-serif; --hand:'Kalam','Comic Sans MS',cursive;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121212;--ink:#f2f2f2;--sub:#b3b3b3;--mute:#8a8a8a;--line:#2a2a2a;--panel:#1b1b1b;--hover:#232323;--pen:#ff6a52;--bar:#3c3c3c;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#121212;--ink:#f2f2f2;--sub:#b3b3b3;--mute:#8a8a8a;--line:#2a2a2a;--panel:#1b1b1b;--hover:#232323;--pen:#ff6a52;--bar:#3c3c3c;color-scheme:dark}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
-.wrap{max-width:860px;margin:0 auto;padding-block:36px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6.5vw,56px);line-height:1;text-transform:uppercase;margin:0;text-wrap:balance}
-h2{font-family:var(--display);font-weight:800;font-size:clamp(24px,4.2vw,32px);text-transform:uppercase;margin:0;line-height:1.05}
-.dek{color:var(--sub);font-size:17px;max-width:62ch;margin:12px 0 0}
-.by{font-family:var(--hand);font-size:28px;margin-top:4px}
-.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:26px}
-@media (max-width:640px){.tiles{grid-template-columns:1fr}}
-.tile{background:var(--panel);border-radius:8px;padding:14px 16px}
-.tile .v{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
-.tile .v.red{color:var(--pen)}
-.tile .k{font-size:14px;color:var(--sub);margin-top:6px}
-.section{margin-top:38px}
-.sechead{border-bottom:3px solid var(--ink);padding-bottom:8px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
-.sechead p{margin:4px 0 0;color:var(--sub);font-size:14px}
-select{font:500 16px var(--body);color:var(--ink);background:var(--bg);border:1.5px solid var(--ink);border-radius:6px;padding:10px 12px;min-width:200px}
-select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--pen);outline-offset:2px}
-.list{list-style:none;margin:0;padding:0}
-.row{border-bottom:1px solid var(--line)}
-.row>button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:14px 4px;font:inherit;color:inherit;cursor:pointer}
-.row>button:hover{background:var(--hover)}
-.n{font-weight:600;font-size:16px}
-.d{color:var(--sub);font-size:13px}
-.r{text-align:right;font-variant-numeric:tabular-nums}
-.big{font-family:var(--display);font-weight:800;font-size:24px;line-height:1}
-.big.zero{color:var(--mute)}
-.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-left:6px;vertical-align:2px}
-.tag.frozen{background:var(--pen);color:#fff}
-.tag.capped{border:1px solid var(--pen);color:var(--pen)}
-.tag.full{border:1px solid var(--sub);color:var(--sub)}
-.detail{padding:4px 4px 20px}
-.detail p{margin:8px 0 0;max-width:64ch}
-.detail .lead{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.15;margin-top:4px}
-.meter{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--bar);margin-top:12px;max-width:520px}
-.meter span{display:block;height:100%;background:var(--ink)}
-.meterlab{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);max-width:520px;margin-top:4px}
-.fits{font-size:14px;color:var(--sub)}
-.note{font-family:var(--hand);font-size:26px;line-height:1.15;color:var(--pen);transform:rotate(-1deg);margin:12px 0 0}
-svg{display:block;width:100%;height:auto}
-details{border-top:1px solid var(--line);padding-top:14px;margin-top:30px;color:var(--sub);font-size:14px}
-summary{cursor:pointer;font-weight:600;color:var(--ink)}
-details p{max-width:70ch}
-.foot{margin-top:40px;border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline;color:var(--mute);font-size:12px}
-.foot .sig{font-family:var(--hand);font-size:30px;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#0e1729;--ink:#eef2f8;--sub:#a9b4c9;--mute:#6f7b93;--rule:#26324a;--wash:#16223a;--navy:#5b8def;--wood:#9c7a4c;--frozen:#465269;--red:#ff4d5e;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0e1729;--ink:#eef2f8;--sub:#a9b4c9;--mute:#6f7b93;--rule:#26324a;--wash:#16223a;--navy:#5b8def;--wood:#9c7a4c;--frozen:#465269;--red:#ff4d5e;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--body)}
+.wrap{max-width:920px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left)) 64px max(16px,env(safe-area-inset-right))}
+header{display:grid;grid-template-columns:1fr auto;gap:8px 24px;align-items:end}
+h1{font:800 clamp(44px,9vw,84px)/.88 var(--cond);letter-spacing:-.5px;margin:0;grid-column:1/-1}
+.dek{margin:14px 0 0;color:var(--sub);font-size:18px;max-width:58ch}
+.by{font:700 26px/1 var(--hand);color:var(--red);transform:rotate(-2deg);white-space:nowrap}
+.updated{color:var(--mute);font-size:14px;margin-top:6px}
+
+/* The clock */
+.clock{margin-top:34px;background:var(--wash);border-radius:14px;padding:18px 18px 10px}
+.clock h2{font:700 26px/1 var(--cond);margin:0}
+.clock p.how{margin:6px 0 0;color:var(--sub);font-size:15px}
+#clock{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#clock svg{display:block;width:100%;min-width:640px;height:auto;margin-top:6px}
+.dot{cursor:pointer}
+.dot:focus-visible{outline:none}
+.dot:focus-visible circle.ring,.dot:hover circle.ring{stroke:var(--ink);stroke-width:2}
+.swipe{display:none}@media (max-width:620px){.swipe{display:inline}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--sub);padding:6px 0 4px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-size:14px;line-height:1.35;padding:8px 10px;border-radius:8px;max-width:240px;opacity:0;transition:opacity .12s;z-index:5}
+.tip b{font:700 17px var(--cond)}
+
+/* Summary sentence */
+.sum{margin:36px 0 0;font:600 clamp(24px,3.6vw,32px)/1.2 var(--cond);max-width:30ch}
+.sum span{color:var(--mute)}
+.sum em{font-style:normal;color:var(--navy)}
+
+/* List */
+.list-head{margin-top:44px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--ink);padding-bottom:10px}
+.list-head h2{font:800 34px/1 var(--cond);margin:0}
+.list-head p{margin:4px 0 0;color:var(--sub);font-size:15px}
+select{font:500 16px var(--body);color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:9px 12px;min-width:210px}
+select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+ul{list-style:none;margin:0;padding:0}
+.row{border-bottom:1px solid var(--rule)}
+.row>button{display:grid;grid-template-columns:64px minmax(0,1fr) 110px;gap:4px 16px;align-items:center;width:100%;background:none;border:0;padding:14px 4px;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.row>button:hover{background:var(--wash)}
+.row.flash>button{animation:flash 1.4s ease-out}
+@keyframes flash{from{background:color-mix(in srgb,var(--navy) 22%,transparent)}to{background:transparent}}
+.abbr{font:800 26px/1 var(--cond);letter-spacing:.3px}
+.who{font-weight:600;font-size:17px}
+.meta{color:var(--sub);font-size:14px}
+.meta .soon{color:var(--red);font-weight:600}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--wood);margin-top:8px;max-width:340px}
+.bar span{background:var(--navy)}
+.bar.frozen{background:var(--frozen)}
+.val{text-align:right}
+.val b{display:block;font:800 28px/1 var(--cond);font-variant-numeric:tabular-nums}
+.val small{color:var(--sub);font-size:13px}
+.val.zero b{color:var(--mute)}
+.more>button{grid-template-columns:1fr;font:700 20px var(--cond);color:var(--navy)}
+.detail{padding:2px 4px 22px 84px}
+.detail p{margin:8px 0 0;max-width:62ch}
+.detail .lead{font:700 23px/1.15 var(--cond);margin-top:2px}
+.note{font:400 23px/1.2 var(--hand);color:var(--red);transform:rotate(-1deg);margin:12px 0 0}
+@media (max-width:620px){
+  header{grid-template-columns:1fr}.by{justify-self:start;margin-top:6px}
+  .row>button{grid-template-columns:48px minmax(0,1fr) 84px;gap:2px 10px}
+  .abbr{font-size:21px}.val b{font-size:23px}
+  .detail{padding-left:4px}
+}
+
+/* Usage chart */
+.usage{margin-top:52px}
+.usage h2{font:800 34px/1 var(--cond);margin:0}
+.usage p.how{margin:6px 0 0;color:var(--sub);font-size:15px}
+#usage svg{display:block;width:100%;height:auto;margin-top:10px}
+
+details{margin-top:40px;border-top:1px solid var(--rule);padding-top:14px;color:var(--sub);font-size:15px}
+summary{cursor:pointer;font:700 20px var(--cond);color:var(--ink)}
+details p{max-width:68ch}
+footer{margin-top:36px;display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;color:var(--mute);font-size:13px}
+footer .sig{font:700 28px var(--hand);color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.row.flash>button{animation:none}.tip{transition:none}}
 </style>
-
+</head>
+<body>
 <div class="wrap">
-  <h1>Trade Exception Tracker</h1>
-  <p class="dek">A trade exception is an option with an expiration date. Teams have 62 of them right now. Here's what each one can actually buy, and how often exceptions like it ever get used.</p>
-  <div class="by">by Isaac Braverman</div>
-
-  <div class="tiles">
-    <div class="tile"><div class="v" id="tFace"></div><div class="k">in open trade exceptions, on paper</div></div>
-    <div class="tile"><div class="v" id="tReal"></div><div class="k">they can actually absorb once apron rules apply</div></div>
-    <div class="tile"><div class="v red">81%</div><div class="k">of exceptions since 2024-25 expired without buying anything</div></div>
-  </div>
-
-  <div class="section">
-    <div class="sechead">
-      <div><h2 id="listTitle">Every open exception</h2><p>Sorted by real buying power. Tap one for details.</p></div>
-      <select id="team" aria-label="Team"><option value="">All teams</option></select>
+  <header>
+    <h1>Trade Exception Tracker</h1>
+    <div>
+      <p class="dek">A trade exception is an option with an expiration date. Here's every one teams are holding, what it can actually buy once the apron rules kick in, and how long it has left.</p>
+      <div class="updated" id="updated"></div>
     </div>
-    <ul class="list" id="list"></ul>
-  </div>
+    <div class="by">by Isaac Braverman</div>
+  </header>
 
-  <div class="section">
-    <div class="sechead"><div><h2>Most of them die unused</h2><p>Share of trade exceptions used at all before they expired, by size. 2020-21 to 2025-26.</p></div></div>
-    <div id="chart"></div>
-  </div>
+  <section class="clock" aria-labelledby="clockTitle">
+    <h2 id="clockTitle">The clock on every exception</h2>
+    <p class="how">Each circle is one exception, grouped by when it expires. Bigger means more money on paper. Tap one to find it in the list.<span class="swipe"> Swipe to see the whole year.</span></p>
+    <div id="clock"></div>
+    <div class="legend">
+      <span><i style="background:var(--navy)"></i>Usable</span>
+      <span><i style="background:var(--wood)"></i>Lost to apron limits</span>
+      <span><i style="background:var(--frozen)"></i>Frozen</span>
+    </div>
+  </section>
+
+  <p class="sum" id="sum"></p>
+
+  <section>
+    <div class="list-head">
+      <div><h2 id="listTitle">Every open exception</h2><p>Sorted by what it can actually absorb. Tap one for details.</p></div>
+      <select id="team" aria-label="Filter by team"><option value="">All teams</option></select>
+    </div>
+    <ul id="list"></ul>
+  </section>
+
+  <section class="usage" aria-labelledby="useTitle">
+    <h2 id="useTitle">Most of them die unused</h2>
+    <p class="how">Share of trade exceptions used at all before expiring, by size, 2020-21 to 2025-26.</p>
+    <div id="usage"></div>
+  </section>
 
   <details>
-    <summary>How it works</summary>
-    <p><b>Open exceptions.</b> Every traded player exception on Hoops Rumors' tracker as of September 27, 2026, with amounts already used taken out.</p>
-    <p><b>Real buying power.</b> An exception's face value is the most salary it can absorb. The rules can shrink that. A team above the first apron ($209.0M) can't use an exception it created last season, and using one hard-caps it at that apron, so its buying power is capped at its room under $209.0M. Teams already hard-capped from offseason moves are limited the same way, at the first apron or the second ($221.7M). Exceptions that Hoops Rumors marks as unusable for apron reasons are listed as frozen. Payrolls are Spotrac's apron totals as of November 4, 2026.</p>
-    <p><b>Chance it gets used.</b> I pulled 120 archived versions of the Hoops Rumors tracker from 2020 to 2026 and followed every exception from creation to expiration: 317 in all. An exception counts as used if any of it was spent. Ones that vanished during an offseason were left out, since those were usually wiped when a team used cap space. The chance shown is the post-2024 usage rate for exceptions of that size, lightly smoothed because the samples are small.</p>
+    <summary>How this works</summary>
+    <p><b>Open exceptions.</b> Every traded player exception on Hoops Rumors' tracker, with amounts already spent taken out. Last checked November 10, 2026, after the Thunder used part of their Aaron Wiggins exception on Nique Clifford.</p>
+    <p><b>What it can absorb.</b> Face value is the most salary an exception can take in. The rules can shrink that. A team above the first apron ($209.0M) can't use an exception it created last season, and using one hard-caps it at that apron, so its buying power stops at its room under $209.0M. Teams already hard-capped from offseason moves are limited the same way, at the first apron or the second ($221.7M). Exceptions Hoops Rumors marks as unusable for apron reasons are listed as frozen. Payrolls are Spotrac's apron totals as of November 4, 2026, adjusted for the Clifford trade.</p>
+    <p><b>How often they get used.</b> I pulled 120 archived versions of the Hoops Rumors tracker from 2020 to 2026 and followed every exception from creation to expiration. An exception counts as used if any of it was spent. Ones that vanished during an offseason were left out, since those were usually wiped when a team used cap space, which leaves 272. The rate shown on each exception is the share of same-size exceptions used since the aprons took effect in 2024-25.</p>
     <p><b>Limits.</b> Archive snapshots are weeks apart, so a few uses could be timed wrong. A frozen exception can come back to life if a team cuts payroll below the apron. And an exception only works if there's a deal on the other end.</p>
   </details>
 
-  <div class="foot"><span>Data: Hoops Rumors trade exception tracker (via the Internet Archive), Spotrac payrolls, NBA.com cap figures. 2026-27 first apron: $209.0M.</span><span class="sig">Isaac Braverman</span></div>
+  <footer><span>Data: Hoops Rumors trade exception tracker (via the Internet Archive), Spotrac payrolls, NBA.com cap figures.</span><span class="sig">Isaac Braverman</span></footer>
 </div>
+<div class="tip" id="tip" role="tooltip"></div>
 
 <script>
-const DATA={"tpe":[{"t":"ATL","p":"Trae Young","e":"2027-01-11","d":68,"a":1358,"i":1358,"u":"","bp":1358,"rule":"prior","pay":199866,"lim":9149},{"t":"ATL","p":"Vit Krejci","e":"2027-02-01","d":89,"a":2350,"i":2350,"u":"","bp":2350,"rule":"prior","pay":199866,"lim":9149},{"t":"ATL","p":"Luke Kennard","e":"2027-02-05","d":93,"a":1972,"i":11000,"u":"Aaron Wiggins","bp":1972,"rule":"prior","pay":199866,"lim":9149},{"t":"ATL","p":"Ryan Nembhard","e":"2027-09-22","d":322,"a":2151,"i":2151,"u":"","bp":2151,"rule":"hc1","pay":199866,"lim":9149},{"t":"BOS","p":"Anfernee Simons","e":"2027-02-05","d":93,"a":27679,"i":27679,"u":"","bp":10293,"rule":"prior","pay":198722,"lim":10293},{"t":"BOS","p":"Chris Boucher","e":"2027-02-05","d":93,"a":2296,"i":2296,"u":"","bp":2296,"rule":"prior","pay":198722,"lim":10293},{"t":"BOS","p":"Josh Minott","e":"2027-02-05","d":93,"a":2379,"i":2379,"u":"","bp":2379,"rule":"prior","pay":198722,"lim":10293},{"t":"BOS","p":"Xavier Tillman Sr.","e":"2027-02-05","d":93,"a":2547,"i":2547,"u":"","bp":2547,"rule":"prior","pay":198722,"lim":10293},{"t":"BOS","p":"Jaylen Brown","e":"2027-07-06","d":244,"a":2952,"i":2952,"u":"","bp":2952,"rule":"hc1","pay":198722,"lim":10293},{"t":"CHA","p":"Mason Plumlee","e":"2027-02-04","d":92,"a":2296,"i":2296,"u":"","bp":2296,"rule":"prior","pay":171531,"lim":37484},{"t":"CHA","p":"Collin Sexton","e":"2027-02-04","d":92,"a":8201,"i":8201,"u":"","bp":8201,"rule":"prior","pay":171531,"lim":37484},{"t":"CHA","p":"Tyus Jones","e":"2027-02-05","d":93,"a":111,"i":7000,"u":"Rob Dillingham","bp":111,"rule":"prior","pay":171531,"lim":37484},{"t":"CHA","p":"LaMelo Ball","e":"2027-07-12","d":250,"a":40771,"i":40771,"u":"","bp":37484,"rule":"hc1","pay":171531,"lim":37484},{"t":"CHA","p":"Dorian Finney-Smith","e":"2027-09-22","d":322,"a":4538,"i":4538,"u":"","bp":4538,"rule":"hc1","pay":171531,"lim":37484},{"t":"CHA","p":"Buddy Hield","e":"2027-09-27","d":327,"a":9659,"i":9659,"u":"","bp":9659,"rule":"hc1","pay":171531,"lim":37484},{"t":"CLE","p":"De\u2019Andre Hunter","e":"2027-02-01","d":89,"a":1440,"i":6898,"u":"Cam Whitmore","bp":45,"rule":"prior","pay":208970,"lim":45},{"t":"CLE","p":"Lonzo Ball","e":"2027-02-05","d":93,"a":10000,"i":10000,"u":"","bp":45,"rule":"prior","pay":208970,"lim":45},{"t":"CLE","p":"Max Strus","e":"2027-08-20","d":289,"a":16661,"i":16661,"u":"","bp":16661,"rule":"open","pay":208970,"lim":null},{"t":"DAL","p":"Anthony Davis","e":"2027-02-05","d":93,"a":7004,"i":20830,"u":"Zaccharie Risacher","bp":7004,"rule":"prior","pay":190675,"lim":18340},{"t":"DAL","p":"Jaden Hardy","e":"2027-02-05","d":93,"a":2910,"i":2910,"u":"","bp":2910,"rule":"prior","pay":190675,"lim":18340},{"t":"DAL","p":"Ryan Nembhard","e":"2027-07-19","d":257,"a":2151,"i":2151,"u":"","bp":2151,"rule":"hc1","pay":190675,"lim":18340},{"t":"DEN","p":"Hunter Tyson","e":"2027-02-05","d":93,"a":2222,"i":2222,"u":"","bp":0,"rule":"frozen","pay":224836,"lim":-15821},{"t":"DEN","p":"Peyton Watson","e":"2027-08-20","d":289,"a":10233,"i":10233,"u":"","bp":0,"rule":"frozen","pay":224836,"lim":null},{"t":"DET","p":"Isaiah Stewart","e":"2027-07-08","d":246,"a":15000,"i":15000,"u":"","bp":14517,"rule":"hc1","pay":194498,"lim":14517},{"t":"DET","p":"Marcus Sasser","e":"2027-07-08","d":246,"a":5199,"i":5199,"u":"","bp":5199,"rule":"hc1","pay":194498,"lim":14517},{"t":"GSW","p":"Trayce Jackson-Davis","e":"2027-02-05","d":93,"a":2222,"i":2222,"u":"","bp":0,"rule":"frozen","pay":221338,"lim":-12323},{"t":"HOU","p":"Dorian Finney-Smith","e":"2027-07-06","d":244,"a":13335,"i":13335,"u":"","bp":13335,"rule":"hc2","pay":200414,"lim":21272},{"t":"IND","p":"Kam Jones","e":"2027-06-24","d":232,"a":1075,"i":1075,"u":"","bp":1075,"rule":"hc1","pay":206780,"lim":2235},{"t":"LAC","p":"Chris Paul","e":"2027-02-05","d":93,"a":145,"i":2296,"u":"Johni Broome","bp":145,"rule":"prior","pay":183341,"lim":25674},{"t":"LAC","p":"Kobe Brown","e":"2027-02-05","d":93,"a":2655,"i":2655,"u":"","bp":2655,"rule":"prior","pay":183341,"lim":25674},{"t":"LAC","p":"Ivica Zubac","e":"2027-02-05","d":93,"a":1314,"i":1314,"u":"","bp":1314,"rule":"prior","pay":183341,"lim":25674},{"t":"LAC","p":"John Collins","e":"2027-07-08","d":246,"a":339,"i":17000,"u":"Max Strus","bp":339,"rule":"hc1","pay":183341,"lim":25674},{"t":"LAC","p":"Kawhi Leonard","e":"2027-09-14","d":314,"a":3168,"i":3168,"u":"","bp":3168,"rule":"hc1","pay":183341,"lim":25674},{"t":"MEM","p":"Jaren Jackson Jr.","e":"2027-02-03","d":91,"a":28873,"i":28873,"u":"","bp":28873,"rule":"prior","pay":163724,"lim":45291},{"t":"MEM","p":"Ja Morant","e":"2027-06-29","d":237,"a":2163,"i":4314,"u":"Micah Peavy","bp":2163,"rule":"hc1","pay":163724,"lim":45291},{"t":"MIL","p":"Bobby Portis","e":"2027-07-06","d":244,"a":86,"i":86,"u":"","bp":86,"rule":"hc1","pay":192536,"lim":16479},{"t":"MIL","p":"Giannis Antetokounmpo","e":"2027-07-06","d":244,"a":25457,"i":25457,"u":"","bp":16479,"rule":"hc1","pay":192536,"lim":16479},{"t":"MIN","p":"Mike Conley","e":"2027-02-03","d":91,"a":10774,"i":10774,"u":"","bp":0,"rule":"frozen","pay":216681,"lim":-7666},{"t":"MIN","p":"Rob Dillingham","e":"2027-02-05","d":93,"a":6576,"i":6576,"u":"","bp":0,"rule":"frozen","pay":216681,"lim":-7666},{"t":"MIN","p":"Josh Green","e":"2027-08-30","d":299,"a":2498,"i":2498,"u":"","bp":2498,"rule":"open","pay":216681,"lim":null},{"t":"NOP","p":"Jose Alvarado","e":"2027-02-05","d":93,"a":4500,"i":4500,"u":"","bp":4500,"rule":"prior","pay":202789,"lim":6226},{"t":"NOP","p":"Jordan Hawkins","e":"2027-09-08","d":308,"a":7022,"i":7022,"u":"","bp":7022,"rule":"open","pay":202789,"lim":null},{"t":"NYK","p":"Guerschon Yabusele","e":"2027-02-05","d":93,"a":101,"i":101,"u":"","bp":0,"rule":"frozen","pay":220877,"lim":-11862},{"t":"NYK","p":"Dalen Terry","e":"2027-02-05","d":93,"a":899,"i":899,"u":"","bp":0,"rule":"frozen","pay":220877,"lim":-11862},{"t":"OKC","p":"Ousmane Dieng","e":"2027-02-04","d":92,"a":2450,"i":6671,"u":"Jared McCain","bp":0,"rule":"frozen","pay":217179,"lim":-8164},{"t":"OKC","p":"Aaron Wiggins","e":"2027-07-06","d":244,"a":9028,"i":9028,"u":"","bp":9028,"rule":"open","pay":217179,"lim":null},{"t":"OKC","p":"Isaiah Joe","e":"2027-07-06","d":244,"a":11323,"i":11323,"u":"","bp":11323,"rule":"open","pay":217179,"lim":null},{"t":"OKC","p":"Luguentz Dort","e":"2027-07-19","d":257,"a":17722,"i":17722,"u":"","bp":17722,"rule":"open","pay":217179,"lim":null},{"t":"ORL","p":"Tyus Jones","e":"2027-02-04","d":92,"a":7000,"i":7000,"u":"","bp":0,"rule":"frozen","pay":219190,"lim":-10175},{"t":"PHI","p":"Jared McCain","e":"2027-02-04","d":92,"a":4221,"i":4221,"u":"","bp":1829,"rule":"prior","pay":207186,"lim":1829},{"t":"PHI","p":"Eric Gordon","e":"2027-02-05","d":93,"a":2296,"i":2296,"u":"","bp":1829,"rule":"prior","pay":207186,"lim":1829},{"t":"PHI","p":"Johni Broome","e":"2027-07-28","d":266,"a":2151,"i":2151,"u":"","bp":1829,"rule":"hc1","pay":207186,"lim":1829},{"t":"PHX","p":"Nick Richards","e":"2027-02-05","d":93,"a":5000,"i":5000,"u":"","bp":0,"rule":"frozen","pay":213776,"lim":-4761},{"t":"PHX","p":"Nigel Hayes-Davis","e":"2027-02-05","d":93,"a":2048,"i":2048,"u":"","bp":0,"rule":"frozen","pay":213776,"lim":-4761},{"t":"POR","p":"Kris Murray","e":"2027-06-29","d":237,"a":3132,"i":3132,"u":"","bp":3132,"rule":"hc1","pay":192093,"lim":16922},{"t":"SAC","p":"Dario Saric","e":"2027-02-01","d":89,"a":5426,"i":5426,"u":"","bp":5426,"rule":"prior","pay":201130,"lim":7885},{"t":"SAC","p":"Devin Carter","e":"2027-06-30","d":238,"a":4924,"i":4924,"u":"","bp":4924,"rule":"hc1","pay":201130,"lim":7885},{"t":"TOR","p":"Ochai Agbaji","e":"2027-02-05","d":93,"a":6384,"i":6384,"u":"","bp":964,"rule":"prior","pay":208051,"lim":964},{"t":"UTA","p":"Jock Landale","e":"2027-02-05","d":93,"a":2296,"i":2296,"u":"","bp":2296,"rule":"prior","pay":182965,"lim":26050},{"t":"UTA","p":"Walker Kessler","e":"2027-07-08","d":246,"a":15054,"i":15054,"u":"","bp":15054,"rule":"hc1","pay":182965,"lim":26050},{"t":"WAS","p":"Jaden Hardy","e":"2027-07-07","d":245,"a":6000,"i":6000,"u":"","bp":6000,"rule":"hc1","pay":194463,"lim":14552},{"t":"WAS","p":"D\u2019Angelo Russell","e":"2027-07-08","d":246,"a":5969,"i":5969,"u":"","bp":5969,"rule":"hc1","pay":194463,"lim":14552}],"pl":[["Stephen Curry","GSW",62600],["Nikola Jokic","DEN",59000],["Jayson Tatum","BOS",58500],["Anthony Davis","WAS",58500],["Giannis Antetokounmpo","MIA",58500],["Joel Embiid","PHI",58100],["Jaylen Brown","PHI",57100],["Devin Booker","PHX",57100],["Karl-Anthony Towns","NYK",57100],["Jimmy Butler","GSW",56800],["Paul George","BOS",54100],["Kawhi Leonard","TOR",50300],["Donovan Mitchell","CLE",50100],["Cade Cunningham","DET",50100],["Evan Mobley","CLE",50100],["Jamal Murray","DEN",50100],["De'Aaron Fox","SAS",49800],["Bam Adebayo","MIA",49800],["Luka Doncic","LAL",49800],["Trae Young","WAS",49500],["Jaren Jackson Jr.","UTA",49000],["Zach LaVine","SAC",49000],["Anthony Edwards","MIN",48900],["Tyrese Haliburton","IND",48900],["Pascal Siakam","IND",48900],["Lauri Markkanen","UTA",46100],["Domantas Sabonis","SAC",45500],["Kevin Durant","HOU",43900],["OG Anunoby","NYK",42500],["Ja Morant","POR",42200],["Zion Williamson","NOP",42200],["Darius Garland","LAC",42200],["Scottie Barnes","TOR",41800],["Franz Wagner","ORL",41800],["Jalen Williams","OKC",41500],["Chet Holmgren","OKC",41500],["Paolo Banchero","ORL",41500],["Austin Reaves","LAL",41200],["Shai Gilgeous-Alexander","OKC",40800],["Michael Porter Jr.","BKN",40800],["Tyrese Maxey","PHI",40800],["LaMelo Ball","MIN",40800],["Jalen Duren","DET",40200],["Brandon Ingram","LAC",40000],["Kyrie Irving","DAL",39500],["Desmond Bane","ORL",39400],["Jalen Brunson","NYK",37700],["Rudy Gobert","MIN",36500],["Jalen Green","PHX",36300],["Damian Lillard","POR",35900],["Alperen Sengun","HOU",35600],["Jrue Holiday","POR",34800],["Jerami Grant","MEM",34200],["Jordan Poole","NOP",34000],["Aaron Gordon","DEN",33700],["Mikal Bridges","NYK",33500],["Julius Randle","BKN",33300],["Tyler Herro","MIL",33000],["Dejounte Murray","NOP",32800],["Immanuel Quickley","TOR",32500],["Jalen Suggs","ORL",32400],["James Harden","CLE",30600],["Derrick White","BOS",30300],["Walker Kessler","LAL",30200],["Andrew Wiggins","MIA",30200],["Jalen Johnson","ATL",30000],["RJ Barrett","TOR",29600],["Jarrett Allen","CLE",28000],["Draymond Green","GSW",27700],["Trey Murphy III","NOP",27000],["Devin Vassell","SAS",27000],["Myles Turner","MIL",26600],["Jaden McDaniels","MIN",26200],["Bradley Beal","LAC",25800],["Dyson Daniels","ATL",25000],["Josh Giddey","CHI",25000],["Fred VanVleet","HOU",25000],["De'Andre Hunter","SAC",24900],["Keegan Murray","SAC",24100],["Jabari Smith Jr.","HOU",23600],["Naz Reid","CHA",23300],["Isaiah Hartenstein","OKC",23100],["Nic Claxton","CHI",23100],["Cameron Johnson","DEN",23100],["Klay Thompson","MIA",23100],["Coby White","CHA",22800],["Miles Bridges","PHX",22800],["Christian Braun","DEN",21600],["Norman Powell","CHI",21500],["CJ McCollum","ATL",21000],["Josh Hart","NYK",20900],["Peyton Watson","CLE",20500],["Kyle Kuzma","MIL",20300],["Ivica Zubac","IND",20300],["Malik Monk","SAC",20200],["Kentavious Caldwell-Pope","PHI",20200],["Shaedon Sharpe","POR",20100],["Dillon Brooks","PHX",20000],["P.J. Washington","DAL",19800],["Alex Caruso","OKC",19600],["Andrew Nembhard","IND",19600],["Kristaps Porzingis","GSW",19500],["Jakob Poeltl","TOR",19500],["Ayo Dosunmu","MIN",19300],["Luguentz Dort","ATL",18200],["Grayson Allen","CHA",18100],["Wendell Carter Jr.","ORL",18100],["Toumani Camara","POR",18100],["Patrick Williams","CHI",18000],["Keldon Johnson","SAS",17500],["Daniel Gafford","DAL",17300],["Santi Aldama","DAL",17000],["John Collins","DET",17000],["Victor Wembanyama","SAS",16900],["Max Strus","LAC",16700],["Nikola Jovic","MIA",16200],["Onyeka Okongwu","ATL",16100],["Duncan Robinson","DET",16000],["Terance Mann","BKN",15500],["Gary Trent Jr.","MIL",15200],["Brandon Miller","CHA",15100],["Mitchell Robinson","BOS",15000],["Tobias Harris","SAS",15000],["Obi Toppin","IND",15000],["Isaiah Stewart","MEM",15000],["Herbert Jones","NOP",14900],["Caris LeVert","MIL",14800],["Dennis Schroder","CHA",14800],["AJ Dybantsa","WAS",14700],["Josh Green","UTA",14700],["Bobby Portis","MIA",14500],["Cooper Flagg","DAL",14500],["Nickeil Alexander-Walker","ATL",14400],["Grant Williams","CHA",14300],["Jock Landale","ATL",14100],["Tari Eason","HOU",14100],["Rui Hachimura","LAC",14000],["Corey Kispert","ATL",14000],["Robert Williams","POR",14000],["Quentin Grimes","LAL",14000],["Julian Champagnie","SAS",13900],["Zaccharie Risacher","DAL",13800],["Scoot Henderson","POR",13600],["Dorian Finney-Smith","ATL",13300],["Darryn Peterson","UTA",13200],["Deni Avdija","POR",13100],["Sandro Mamukelashvili","LAL",13000],["Steven Adams","HOU",13000],["Dylan Harper","SAS",13000],["Donte DiVincenzo","MIN",12500],["Moses Moody","GSW",12500],["Jarred Vanderbilt","LAL",12400],["Davion Mitchell","MIA",12400],["Alex Sarr","WAS",12400],["Amen Thompson","HOU",12300],["Cameron Boozer","MEM",11800],["Isaac Okoro","CHI",11800],["Mark Williams","PHX",11700],["VJ Edgecombe","PHI",11700],["Isaiah Joe","DET",11300],["Ausar Thompson","DET",11100],["Reed Sheppard","HOU",11100],["Aaron Nesmith","IND",11000],["T.J. McConnell","IND",11000],["Royce O'Neale","CHA",10900],["Sam Hauser","BOS",10800],["Collin Gillespie","PHX",10700],["Caleb Wilson","CHI",10700],["Jusuf Nurkic","UTA",10600],["Kon Knueppel","CHA",10500],["Derrick Jones Jr.","LAC",10500],["Luke Kornet","SAS",10500],["Jonathan Isaac","ORL",10400],["Anthony Black","ORL",10100],["A.J. Green","MIL",10000],["Stephon Castle","SAS",10000],["Caleb Martin","DAL",10000],["Day'Ron Sharpe","BKN",10000],["Keaton Wagler","LAC",9700],["Buddy Hield","CHI",9700],["Ace Bailey","UTA",9500],["Naji Marshall","DAL",9400],["Jalen Smith","CHI",9400],["Collin Sexton","LAL",9400],["Moritz Wagner","BKN",9300],["Bilal Coulibaly","WAS",9200],["Aaron Wiggins","ATL",9200],["Ty Jerome","MEM",9200],["Brook Lopez","LAC",9200],["Sam Merrill","CLE",9200],["Ron Holland","DET",9100],["Dean Wade","PHI",9000],["Mikel Brown Jr.","BKN",8800],["Keon Ellis","BKN",8800],["Tre Johnson","WAS",8600],["Jarace Walker","IND",8500],["Kevin Huerter","DET",8300],["Zach Collins","CHI",8300],["Quinten Post","MEM",8300],["Max Christie","DAL",8300],["Tidjane Salaun","CHA",8200],["Deandre Ayton","WAS",8100],["Kelly Oubre Jr.","IND",8100],["Darius Acuff Jr.","SAC",8000],["Tre Mann","WAS",8000],["Harrison Barnes","SAS",8000],["Tre Jones","CHI",8000],["Jeremiah Fears","NOP",7900],["Taylor Hendricks","MEM",7800],["Bennedict Mathurin","NOP",7800],["Jaylin Williams","OKC",7800],["Payton Pritchard","BOS",7800],["Goga Bitadze","ORL",7600],["Donovan Clingan","POR",7500],["Zeke Nnaji","DEN",7500],["Cason Wallace","OKC",7400],["Kingston Flemings","ATL",7300],["Dereck Lively II","DAL",7200],["Egor Demin","BKN",7200],["Gradey Dick","LAC",7100],["Clint Capela","HOU",7000],["Jordan Hawkins","MEM",7000],["Isaiah Jackson","LAC",7000],["Rob Dillingham","CHA",6900],["Al Horford","GSW",6800],["Morez Johnson Jr.","DAL",6800],["Collin Murray-Boyles","TOR",6600],["Keyonte George","UTA",6600],["Tim Hardaway Jr.","MIA",6500],["Saddiq Bey","NOP",6400],["Brayden Burries","MIL",6400],["Zach Edey","MEM",6300],["Khaman Maluach","PHX",6300],["Yaxel Lendeborg","GSW",6100],["Luke Kennard","PHX",6100],["Jonathan Kuminga","MIN",6100],["Marcus Smart","HOU",6100],["Cody Williams","MIN",6000],["Cedric Coward","MEM",6000],["Spencer Jones","DEN",6000],["Jaxson Hayes","UTA",6000],["Josh Okogie","UTA",6000],["Anfernee Simons","PHI",6000],["Jake LaRavia","LAL",6000],["Jaden Hardy","LAL",6000],["D'Angelo Russell","MEM",6000],["Jaime Jaquez Jr.","MIL",5900],["Nicolas Batum","LAC",5900],["Jordan Goodwin","PHX",5900],["Aday Mara","OKC",5800],["Ousmane Dieng","MIL",5800],["Matas Buzelis","CHI",5700],["Noa Essengue","CHI",5700],["Kris Dunn","LAC",5700],["Brandin Podziemski","GSW",5700],["Paul Reed","DET",5600],["Khris Middleton","WAS",5600],["Nate Ament","MIL",5500],["Precious Achiuwa","SAC",5500],["De'Anthony Melton","GSW",5500],["Nikola Topic","OKC",5400],["Derik Queen","NOP",5400],["Noah Clowney","BKN",5400],["Kevin Porter Jr.","MIL",5400],["Landry Shamet","NYK",5400],["Kris Murray","MEM",5300],["Jordan Miller","LAC",5300],["Hannes Steinbach","CHA",5200],["Marcus Sasser","DAL",5200],["Devin Carter","ATL",5200],["Carter Bryant","SAS",5100],["Ben Sheppard","IND",5000],["Kenrich Williams","OKC",5000],["Dailyn Swain","CHI",5000],["Bub Carrington","WAS",4900],["Thomas Sorber","OKC",4900],["Brice Sensabaugh","UTA",4900],["Julian Strawther","DEN",4800],["Bennett Stirtz","OKC",4700],["Kel'el Ware","MIL",4700],["Yang Hansen","POR",4600],["Gui Santos","GSW",4600],["Jose Alvarado","NYK",4500],["Josh Minott","BKN",4500],["Ebuka Okorie","DET",4500],["Jared McCain","OKC",4400],["Joan Beringer","MIN",4400],["Christian Anderson Jr.","CHA",4300],["Dalton Knecht","LAL",4200],["Walter Clayton","MEM",4200],["Allen Graves","TOR",4100],["Nolan Traore","BKN",4000],["Ryan Rollins","MIL",4000],["Daniss Jenkins","DET",4000],["Tristan Da Silva","ORL",4000],["Miles McBride","NYK",4000],["Javonte Green","DET",3900],["Jayden Quaintance","SAS",3900],["DeAndre Jordan","NOP",3900],["LeBron James","PHI",3900],["Svi Mykhailiuk","UTA",3900],["Kasparas Jakucionis","MIL",3800],["Gary Harris","DET",3800],["Taurean Prince","DET",3800],["Pat Connaughton","CHA",3800],["Ja'Kobe Walter","TOR",3800],["Karim Lopez","MEM",3700],["Cole Anthony","MEM",3700],["Will Riley","WAS",3700],["Jaylon Tyson","CLE",3700],["Labaron Philon Jr.","PHI",3600],["Drake Powell","BKN",3500],["Yves Missi","NOP",3500],["Zuby Ejiofor","ATL",3500],["Olivier-Maxence Prosper","DAL",3500],["Dominick Barlow","PHI",3400],["Ariel Hukporti","PHI",3400],["Asa Newell","ATL",3400],["DaRon Holmes","DEN",3400],["Cameron Carr","LAL",3300],["Mo Bamba","UTA",3300],["Nique Clifford","SAC",3300],["AJ Johnson","NOP",3200],["Sergio de Larrea","DAL",3200],["Ron Harper Jr.","BOS",3200],["Jase Richardson","ORL",3100],["Kyshawn George","WAS",3100],["Nassir Little","PHX",3100],["Jaylen Clark","MIN",3100],["Tarris Reed Jr.","SAS",3100],["Ben Saraf","BKN",3000],["Tarik Biberovic","DAL",3000],["Kyle Filipowski","UTA",3000],["Chris Cenac Jr.","BOS",3000],["Pacome Dadiet","NYK",3000],["Joshua Jefferson","BKN",3000],["Alex Karaban","SAC",2900],["Danny Wolf","BKN",2900],["Koa Peat","PHX",2900],["Hugo Gonzalez","BOS",2900],["Liam McNeeley","CHA",2900],["Yanic Konan Niederhauser","LAC",2900],["Ajay Mitchell","OKC",2900],["Bones Hyland","MIN",2800],["Terrence Shannon Jr.","MIN",2800],["Micah Potter","POR",2800],["Jericho Sims","MIL",2800],["Luka Garza","BOS",2800],["Ryan Dunn","PHX",2800],["Isaiah Collier","UTA",2800],["Baylor Scheierman","BOS",2700],["Neemias Queta","BOS",2700],["Justin Champagnie","WAS",2700],["Vit Krejci","POR",2700],["Jay Huff","IND",2700],["Kobe Sanders","LAC",2600],["Jamaree Bouyea","PHX",2600],["Jamal Cain","ORL",2600],["Bryce McGowens","NOP",2600],["Jabari Walker","PHI",2600],["Dru Smith","MIA",2600],["Pete Nance","MIL",2500],["Sidy Cissoko","POR",2500],["Scotty Pippen Jr.","MEM",2500],["Moussa Diabate","CHA",2500],["Daeqwon Plowden","SAC",2400],["Isaiah Crawford","HOU",2400],["Anthony Gill","WAS",2400],["Kyle Anderson","TOR",2400],["Jordan McLaughlin","SAS",2400],["Branden Carlson","POR",2400],["Jevon Carter","ORL",2400],["Nikola Vucevic","ORL",2400],["Jordan Clarkson","NYK",2400],["Andre Drummond","NYK",2400],["Trey Lyles","MIN",2400],["Nick Richards","MIA",2400],["Simone Fontecchio","MIA",2400],["Matisse Thybulle","LAL",2400],["Ziaire Williams","LAL",2400],["Kevon Looney","LAL",2400],["Larry Nance Jr.","IND",2400],["Jae'Sean Tate","HOU",2400],["Bogdan Bogdanovic","HOU",2400],["Gary Payton II","GSW",2400],["Charles Bassey","GSW",2400],["DeMar DeRozan","DEN",2400],["Marvin Bagley III","DEN",2400],["Tyus Jones","DEN",2400],["Mario Hezonja","CLE",2400],["Thomas Bryant","CLE",2400],["Mike Conley","BOS",2400],["Ben Simmons","SAC",2400],["James Wiseman","NYK",2400],["Trendon Watford","NOP",2400],["Georges Niang","GSW",2400],["Brandon Williams","GSW",2400],["Cam Spencer","MEM",2400],["Justin Edwards","PHI",2400],["Tolu Smith","DET",2400],["Nae'Qwan Tomlin","CLE",2400],["Sion James","CHA",2400],["Ryan Kalkbrenner","CHA",2400],["Jordan Walsh","BOS",2400],["Trayce Jackson-Davis","TOR",2400],["GG Jackson II","MEM",2400],["Craig Porter Jr.","CLE",2400],["Leonard Miller","CHI",2400],["Mouhamed Gueye","ATL",2400],["Pelle Larsson","MIA",2300],["Oso Ighodaro","PHX",2300],["Jamal Shead","TOR",2300],["Tyler Kolek","NYK",2300],["Karlo Matkovic","NOP",2300],["Johnny Furphy","IND",2300],["Jamison Battle","TOR",2300],["Adem Bona","PHI",2300],["Jaylen Wells","MEM",2300],["Bronny James","LAL",2300],["Mohamed Diawara","NYK",2200],["JaVale McGee","DAL",2200],["Alijah Martin","TOR",2200],["Moussa Cisse","DAL",2200],["Rasheer Fleming","PHX",2200],["Maxime Raynaud","SAC",2200],["Noah Penda","ORL",2200],["Micah Peavy","MEM",2200],["Adou Thiero","LAL",2200],["Johni Broome","LAC",2200],["Will Richard","GSW",2200],["Chaz Lanier","DET",2200],["Tyrese Proctor","CLE",2200],["Ryan Nembhard","CHA",2200],["Myron Gardner","MIA",2200],["John Konchar","MIN",2100],["Cam Whitmore","CLE",1800],["Baba Miller","LAC",1700],["Isaiah Evans","MIN",1400],["Bogoljub Markovic","MIL",1400],["Meleek Thomas","CLE",1400],["Emanuel Sharp","SAC",1400],["Ryan Conwell","MIA",1400],["Henri Veesaar","ATL",1400],["Jaden Bradley","TOR",1400],["Bruce Thornton","HOU",1400],["Trevon Brazile","DEN",1400],["Khalifa Diop","CLE",1400],["Alpha Diallo","DEN",1400],["Haywood Highsmith","PHX",1000],["E.J. Liddell","PHX",700],["Vasilije Micic","MIL",700],["Mamadi Diakite","MEM",500],["Ricky Rubio","CLE",400],["Didi Louzada","POR",300],["Taj Gibson","NOP",100]]};
+const DATA={"tpe":[{"t":"ATL","p":"Trae Young","e":"2027-01-11","a":1358,"i":1358,"u":"","bp":1358,"rule":"prior","pay":199866,"lim":9149},{"t":"ATL","p":"Vit Krejci","e":"2027-02-01","a":2350,"i":2350,"u":"","bp":2350,"rule":"prior","pay":199866,"lim":9149},{"t":"ATL","p":"Luke Kennard","e":"2027-02-05","a":1972,"i":11000,"u":"Aaron Wiggins","bp":1972,"rule":"prior","pay":199866,"lim":9149},{"t":"ATL","p":"Ryan Nembhard","e":"2027-09-22","a":2151,"i":2151,"u":"","bp":2151,"rule":"hc1","pay":199866,"lim":9149},{"t":"BOS","p":"Anfernee Simons","e":"2027-02-05","a":27679,"i":27679,"u":"","bp":10293,"rule":"prior","pay":198722,"lim":10293},{"t":"BOS","p":"Chris Boucher","e":"2027-02-05","a":2296,"i":2296,"u":"","bp":2296,"rule":"prior","pay":198722,"lim":10293},{"t":"BOS","p":"Josh Minott","e":"2027-02-05","a":2379,"i":2379,"u":"","bp":2379,"rule":"prior","pay":198722,"lim":10293},{"t":"BOS","p":"Xavier Tillman Sr.","e":"2027-02-05","a":2547,"i":2547,"u":"","bp":2547,"rule":"prior","pay":198722,"lim":10293},{"t":"BOS","p":"Jaylen Brown","e":"2027-07-06","a":2952,"i":2952,"u":"","bp":2952,"rule":"hc1","pay":198722,"lim":10293},{"t":"CHA","p":"Mason Plumlee","e":"2027-02-04","a":2296,"i":2296,"u":"","bp":2296,"rule":"prior","pay":171531,"lim":37484},{"t":"CHA","p":"Collin Sexton","e":"2027-02-04","a":8201,"i":8201,"u":"","bp":8201,"rule":"prior","pay":171531,"lim":37484},{"t":"CHA","p":"Tyus Jones","e":"2027-02-05","a":111,"i":7000,"u":"Rob Dillingham","bp":111,"rule":"prior","pay":171531,"lim":37484},{"t":"CHA","p":"LaMelo Ball","e":"2027-07-12","a":40771,"i":40771,"u":"","bp":37484,"rule":"hc1","pay":171531,"lim":37484},{"t":"CHA","p":"Dorian Finney-Smith","e":"2027-09-22","a":4538,"i":4538,"u":"","bp":4538,"rule":"hc1","pay":171531,"lim":37484},{"t":"CHA","p":"Buddy Hield","e":"2027-09-27","a":9659,"i":9659,"u":"","bp":9659,"rule":"hc1","pay":171531,"lim":37484},{"t":"CLE","p":"De’Andre Hunter","e":"2027-02-01","a":1440,"i":6898,"u":"Cam Whitmore","bp":45,"rule":"prior","pay":208970,"lim":45},{"t":"CLE","p":"Lonzo Ball","e":"2027-02-05","a":10000,"i":10000,"u":"","bp":45,"rule":"prior","pay":208970,"lim":45},{"t":"CLE","p":"Max Strus","e":"2027-08-20","a":16661,"i":16661,"u":"","bp":16661,"rule":"open","pay":208970,"lim":null},{"t":"DAL","p":"Anthony Davis","e":"2027-02-05","a":7004,"i":20830,"u":"Zaccharie Risacher","bp":7004,"rule":"prior","pay":190675,"lim":18340},{"t":"DAL","p":"Jaden Hardy","e":"2027-02-05","a":2910,"i":2910,"u":"","bp":2910,"rule":"prior","pay":190675,"lim":18340},{"t":"DAL","p":"Ryan Nembhard","e":"2027-07-19","a":2151,"i":2151,"u":"","bp":2151,"rule":"hc1","pay":190675,"lim":18340},{"t":"DEN","p":"Hunter Tyson","e":"2027-02-05","a":2222,"i":2222,"u":"","bp":0,"rule":"frozen","pay":224836,"lim":-15821},{"t":"DEN","p":"Peyton Watson","e":"2027-08-20","a":10233,"i":10233,"u":"","bp":0,"rule":"frozen","pay":224836,"lim":null},{"t":"DET","p":"Isaiah Stewart","e":"2027-07-08","a":15000,"i":15000,"u":"","bp":14517,"rule":"hc1","pay":194498,"lim":14517},{"t":"DET","p":"Marcus Sasser","e":"2027-07-08","a":5199,"i":5199,"u":"","bp":5199,"rule":"hc1","pay":194498,"lim":14517},{"t":"GSW","p":"Trayce Jackson-Davis","e":"2027-02-05","a":2222,"i":2222,"u":"","bp":0,"rule":"frozen","pay":221338,"lim":-12323},{"t":"HOU","p":"Dorian Finney-Smith","e":"2027-07-06","a":13335,"i":13335,"u":"","bp":13335,"rule":"hc2","pay":200414,"lim":21272},{"t":"IND","p":"Kam Jones","e":"2027-06-24","a":1075,"i":1075,"u":"","bp":1075,"rule":"hc1","pay":206780,"lim":2235},{"t":"LAC","p":"Chris Paul","e":"2027-02-05","a":145,"i":2296,"u":"Johni Broome","bp":145,"rule":"prior","pay":183341,"lim":25674},{"t":"LAC","p":"Kobe Brown","e":"2027-02-05","a":2655,"i":2655,"u":"","bp":2655,"rule":"prior","pay":183341,"lim":25674},{"t":"LAC","p":"Ivica Zubac","e":"2027-02-05","a":1314,"i":1314,"u":"","bp":1314,"rule":"prior","pay":183341,"lim":25674},{"t":"LAC","p":"John Collins","e":"2027-07-08","a":339,"i":17000,"u":"Max Strus","bp":339,"rule":"hc1","pay":183341,"lim":25674},{"t":"LAC","p":"Kawhi Leonard","e":"2027-09-14","a":3168,"i":3168,"u":"","bp":3168,"rule":"hc1","pay":183341,"lim":25674},{"t":"MEM","p":"Jaren Jackson Jr.","e":"2027-02-03","a":28873,"i":28873,"u":"","bp":28873,"rule":"prior","pay":163724,"lim":45291},{"t":"MEM","p":"Ja Morant","e":"2027-06-29","a":2163,"i":4314,"u":"Micah Peavy","bp":2163,"rule":"hc1","pay":163724,"lim":45291},{"t":"MIL","p":"Bobby Portis","e":"2027-07-06","a":86,"i":86,"u":"","bp":86,"rule":"hc1","pay":192536,"lim":16479},{"t":"MIL","p":"Giannis Antetokounmpo","e":"2027-07-06","a":25457,"i":25457,"u":"","bp":16479,"rule":"hc1","pay":192536,"lim":16479},{"t":"MIN","p":"Mike Conley","e":"2027-02-03","a":10774,"i":10774,"u":"","bp":0,"rule":"frozen","pay":216681,"lim":-7666},{"t":"MIN","p":"Rob Dillingham","e":"2027-02-05","a":6576,"i":6576,"u":"","bp":0,"rule":"frozen","pay":216681,"lim":-7666},{"t":"MIN","p":"Josh Green","e":"2027-08-30","a":2498,"i":2498,"u":"","bp":2498,"rule":"open","pay":216681,"lim":null},{"t":"NOP","p":"Jose Alvarado","e":"2027-02-05","a":4500,"i":4500,"u":"","bp":4500,"rule":"prior","pay":202789,"lim":6226},{"t":"NOP","p":"Jordan Hawkins","e":"2027-09-08","a":7022,"i":7022,"u":"","bp":7022,"rule":"open","pay":202789,"lim":null},{"t":"NYK","p":"Guerschon Yabusele","e":"2027-02-05","a":101,"i":101,"u":"","bp":0,"rule":"frozen","pay":220877,"lim":-11862},{"t":"NYK","p":"Dalen Terry","e":"2027-02-05","a":899,"i":899,"u":"","bp":0,"rule":"frozen","pay":220877,"lim":-11862},{"t":"OKC","p":"Ousmane Dieng","e":"2027-02-04","a":2450,"i":6671,"u":"Jared McCain","bp":0,"rule":"frozen","pay":220442,"lim":-11427},{"t":"OKC","p":"Aaron Wiggins","e":"2027-07-06","a":5765,"i":9028,"u":"Nique Clifford","bp":5765,"rule":"open","pay":220442,"lim":null},{"t":"OKC","p":"Isaiah Joe","e":"2027-07-06","a":11323,"i":11323,"u":"","bp":11323,"rule":"open","pay":220442,"lim":null},{"t":"OKC","p":"Luguentz Dort","e":"2027-07-19","a":17722,"i":17722,"u":"","bp":17722,"rule":"open","pay":220442,"lim":null},{"t":"ORL","p":"Tyus Jones","e":"2027-02-04","a":7000,"i":7000,"u":"","bp":0,"rule":"frozen","pay":219190,"lim":-10175},{"t":"PHI","p":"Jared McCain","e":"2027-02-04","a":4221,"i":4221,"u":"","bp":1829,"rule":"prior","pay":207186,"lim":1829},{"t":"PHI","p":"Eric Gordon","e":"2027-02-05","a":2296,"i":2296,"u":"","bp":1829,"rule":"prior","pay":207186,"lim":1829},{"t":"PHI","p":"Johni Broome","e":"2027-07-28","a":2151,"i":2151,"u":"","bp":1829,"rule":"hc1","pay":207186,"lim":1829},{"t":"PHX","p":"Nick Richards","e":"2027-02-05","a":5000,"i":5000,"u":"","bp":0,"rule":"frozen","pay":213776,"lim":-4761},{"t":"PHX","p":"Nigel Hayes-Davis","e":"2027-02-05","a":2048,"i":2048,"u":"","bp":0,"rule":"frozen","pay":213776,"lim":-4761},{"t":"POR","p":"Kris Murray","e":"2027-06-29","a":3132,"i":3132,"u":"","bp":3132,"rule":"hc1","pay":192093,"lim":16922},{"t":"SAC","p":"Dario Saric","e":"2027-02-01","a":5426,"i":5426,"u":"","bp":5426,"rule":"prior","pay":197867,"lim":11133},{"t":"SAC","p":"Devin Carter","e":"2027-06-30","a":4924,"i":4924,"u":"","bp":4924,"rule":"hc1","pay":197867,"lim":11133},{"t":"TOR","p":"Ochai Agbaji","e":"2027-02-05","a":6384,"i":6384,"u":"","bp":964,"rule":"prior","pay":208051,"lim":964},{"t":"UTA","p":"Jock Landale","e":"2027-02-05","a":2296,"i":2296,"u":"","bp":2296,"rule":"prior","pay":182965,"lim":26050},{"t":"UTA","p":"Walker Kessler","e":"2027-07-08","a":15054,"i":15054,"u":"","bp":15054,"rule":"hc1","pay":182965,"lim":26050},{"t":"WAS","p":"Jaden Hardy","e":"2027-07-07","a":6000,"i":6000,"u":"","bp":6000,"rule":"hc1","pay":194463,"lim":14552},{"t":"WAS","p":"D’Angelo Russell","e":"2027-07-08","a":5969,"i":5969,"u":"","bp":5969,"rule":"hc1","pay":194463,"lim":14552},{"t":"SAC","p":"Nique Clifford","e":"2027-11-08","a":3263,"i":3263,"u":"","bp":3263,"rule":"hc1","pay":197867,"lim":11133}],"pl":[["Stephen Curry","GSW",62600],["Nikola Jokic","DEN",59000],["Jayson Tatum","BOS",58500],["Anthony Davis","WAS",58500],["Giannis Antetokounmpo","MIA",58500],["Joel Embiid","PHI",58100],["Jaylen Brown","PHI",57100],["Devin Booker","PHX",57100],["Karl-Anthony Towns","NYK",57100],["Jimmy Butler","GSW",56800],["Paul George","BOS",54100],["Kawhi Leonard","TOR",50300],["Donovan Mitchell","CLE",50100],["Cade Cunningham","DET",50100],["Evan Mobley","CLE",50100],["Jamal Murray","DEN",50100],["De'Aaron Fox","SAS",49800],["Bam Adebayo","MIA",49800],["Luka Doncic","LAL",49800],["Trae Young","WAS",49500],["Jaren Jackson Jr.","UTA",49000],["Zach LaVine","SAC",49000],["Anthony Edwards","MIN",48900],["Tyrese Haliburton","IND",48900],["Pascal Siakam","IND",48900],["Lauri Markkanen","UTA",46100],["Domantas Sabonis","SAC",45500],["Kevin Durant","HOU",43900],["OG Anunoby","NYK",42500],["Ja Morant","POR",42200],["Zion Williamson","NOP",42200],["Darius Garland","LAC",42200],["Scottie Barnes","TOR",41800],["Franz Wagner","ORL",41800],["Jalen Williams","OKC",41500],["Chet Holmgren","OKC",41500],["Paolo Banchero","ORL",41500],["Austin Reaves","LAL",41200],["Shai Gilgeous-Alexander","OKC",40800],["Michael Porter Jr.","BKN",40800],["Tyrese Maxey","PHI",40800],["LaMelo Ball","MIN",40800],["Jalen Duren","DET",40200],["Brandon Ingram","LAC",40000],["Kyrie Irving","DAL",39500],["Desmond Bane","ORL",39400],["Jalen Brunson","NYK",37700],["Rudy Gobert","MIN",36500],["Jalen Green","PHX",36300],["Damian Lillard","POR",35900],["Alperen Sengun","HOU",35600],["Jrue Holiday","POR",34800],["Jerami Grant","MEM",34200],["Jordan Poole","NOP",34000],["Aaron Gordon","DEN",33700],["Mikal Bridges","NYK",33500],["Julius Randle","BKN",33300],["Tyler Herro","MIL",33000],["Dejounte Murray","NOP",32800],["Immanuel Quickley","TOR",32500],["Jalen Suggs","ORL",32400],["James Harden","CLE",30600],["Derrick White","BOS",30300],["Walker Kessler","LAL",30200],["Andrew Wiggins","MIA",30200],["Jalen Johnson","ATL",30000],["RJ Barrett","TOR",29600],["Jarrett Allen","CLE",28000],["Draymond Green","GSW",27700],["Trey Murphy III","NOP",27000],["Devin Vassell","SAS",27000],["Myles Turner","MIL",26600],["Jaden McDaniels","MIN",26200],["Bradley Beal","LAC",25800],["Dyson Daniels","ATL",25000],["Josh Giddey","CHI",25000],["Fred VanVleet","HOU",25000],["De'Andre Hunter","SAC",24900],["Keegan Murray","SAC",24100],["Jabari Smith Jr.","HOU",23600],["Naz Reid","CHA",23300],["Isaiah Hartenstein","OKC",23100],["Nic Claxton","CHI",23100],["Cameron Johnson","DEN",23100],["Klay Thompson","MIA",23100],["Coby White","CHA",22800],["Miles Bridges","PHX",22800],["Christian Braun","DEN",21600],["Norman Powell","CHI",21500],["CJ McCollum","ATL",21000],["Josh Hart","NYK",20900],["Peyton Watson","CLE",20500],["Kyle Kuzma","MIL",20300],["Ivica Zubac","IND",20300],["Malik Monk","SAC",20200],["Kentavious Caldwell-Pope","PHI",20200],["Shaedon Sharpe","POR",20100],["Dillon Brooks","PHX",20000],["P.J. Washington","DAL",19800],["Alex Caruso","OKC",19600],["Andrew Nembhard","IND",19600],["Kristaps Porzingis","GSW",19500],["Jakob Poeltl","TOR",19500],["Ayo Dosunmu","MIN",19300],["Luguentz Dort","ATL",18200],["Grayson Allen","CHA",18100],["Wendell Carter Jr.","ORL",18100],["Toumani Camara","POR",18100],["Patrick Williams","CHI",18000],["Keldon Johnson","SAS",17500],["Daniel Gafford","DAL",17300],["Santi Aldama","DAL",17000],["John Collins","DET",17000],["Victor Wembanyama","SAS",16900],["Max Strus","LAC",16700],["Nikola Jovic","MIA",16200],["Onyeka Okongwu","ATL",16100],["Duncan Robinson","DET",16000],["Terance Mann","BKN",15500],["Gary Trent Jr.","MIL",15200],["Brandon Miller","CHA",15100],["Mitchell Robinson","BOS",15000],["Tobias Harris","SAS",15000],["Obi Toppin","IND",15000],["Isaiah Stewart","MEM",15000],["Herbert Jones","NOP",14900],["Caris LeVert","MIL",14800],["Dennis Schroder","CHA",14800],["AJ Dybantsa","WAS",14700],["Josh Green","UTA",14700],["Bobby Portis","MIA",14500],["Cooper Flagg","DAL",14500],["Nickeil Alexander-Walker","ATL",14400],["Grant Williams","CHA",14300],["Jock Landale","ATL",14100],["Tari Eason","HOU",14100],["Rui Hachimura","LAC",14000],["Corey Kispert","ATL",14000],["Robert Williams","POR",14000],["Quentin Grimes","LAL",14000],["Julian Champagnie","SAS",13900],["Zaccharie Risacher","DAL",13800],["Scoot Henderson","POR",13600],["Dorian Finney-Smith","ATL",13300],["Darryn Peterson","UTA",13200],["Deni Avdija","POR",13100],["Sandro Mamukelashvili","LAL",13000],["Steven Adams","HOU",13000],["Dylan Harper","SAS",13000],["Donte DiVincenzo","MIN",12500],["Moses Moody","GSW",12500],["Jarred Vanderbilt","LAL",12400],["Davion Mitchell","MIA",12400],["Alex Sarr","WAS",12400],["Amen Thompson","HOU",12300],["Cameron Boozer","MEM",11800],["Isaac Okoro","CHI",11800],["Mark Williams","PHX",11700],["VJ Edgecombe","PHI",11700],["Isaiah Joe","DET",11300],["Ausar Thompson","DET",11100],["Reed Sheppard","HOU",11100],["Aaron Nesmith","IND",11000],["T.J. McConnell","IND",11000],["Royce O'Neale","CHA",10900],["Sam Hauser","BOS",10800],["Collin Gillespie","PHX",10700],["Caleb Wilson","CHI",10700],["Jusuf Nurkic","UTA",10600],["Kon Knueppel","CHA",10500],["Derrick Jones Jr.","LAC",10500],["Luke Kornet","SAS",10500],["Jonathan Isaac","ORL",10400],["Anthony Black","ORL",10100],["A.J. Green","MIL",10000],["Stephon Castle","SAS",10000],["Caleb Martin","DAL",10000],["Day'Ron Sharpe","BKN",10000],["Keaton Wagler","LAC",9700],["Buddy Hield","CHI",9700],["Ace Bailey","UTA",9500],["Naji Marshall","DAL",9400],["Jalen Smith","CHI",9400],["Collin Sexton","LAL",9400],["Moritz Wagner","BKN",9300],["Bilal Coulibaly","WAS",9200],["Aaron Wiggins","ATL",9200],["Ty Jerome","MEM",9200],["Brook Lopez","LAC",9200],["Sam Merrill","CLE",9200],["Ron Holland","DET",9100],["Dean Wade","PHI",9000],["Mikel Brown Jr.","BKN",8800],["Keon Ellis","BKN",8800],["Tre Johnson","WAS",8600],["Jarace Walker","IND",8500],["Kevin Huerter","DET",8300],["Zach Collins","CHI",8300],["Quinten Post","MEM",8300],["Max Christie","DAL",8300],["Tidjane Salaun","CHA",8200],["Deandre Ayton","WAS",8100],["Kelly Oubre Jr.","IND",8100],["Darius Acuff Jr.","SAC",8000],["Tre Mann","WAS",8000],["Harrison Barnes","SAS",8000],["Tre Jones","CHI",8000],["Jeremiah Fears","NOP",7900],["Taylor Hendricks","MEM",7800],["Bennedict Mathurin","NOP",7800],["Jaylin Williams","OKC",7800],["Payton Pritchard","BOS",7800],["Goga Bitadze","ORL",7600],["Donovan Clingan","POR",7500],["Zeke Nnaji","DEN",7500],["Cason Wallace","OKC",7400],["Kingston Flemings","ATL",7300],["Dereck Lively II","DAL",7200],["Egor Demin","BKN",7200],["Gradey Dick","LAC",7100],["Clint Capela","HOU",7000],["Jordan Hawkins","MEM",7000],["Isaiah Jackson","LAC",7000],["Rob Dillingham","CHA",6900],["Al Horford","GSW",6800],["Morez Johnson Jr.","DAL",6800],["Collin Murray-Boyles","TOR",6600],["Keyonte George","UTA",6600],["Tim Hardaway Jr.","MIA",6500],["Saddiq Bey","NOP",6400],["Brayden Burries","MIL",6400],["Zach Edey","MEM",6300],["Khaman Maluach","PHX",6300],["Yaxel Lendeborg","GSW",6100],["Luke Kennard","PHX",6100],["Jonathan Kuminga","MIN",6100],["Marcus Smart","HOU",6100],["Cody Williams","MIN",6000],["Cedric Coward","MEM",6000],["Spencer Jones","DEN",6000],["Jaxson Hayes","UTA",6000],["Josh Okogie","UTA",6000],["Anfernee Simons","PHI",6000],["Jake LaRavia","LAL",6000],["Jaden Hardy","LAL",6000],["D'Angelo Russell","MEM",6000],["Jaime Jaquez Jr.","MIL",5900],["Nicolas Batum","LAC",5900],["Jordan Goodwin","PHX",5900],["Aday Mara","OKC",5800],["Ousmane Dieng","MIL",5800],["Matas Buzelis","CHI",5700],["Noa Essengue","CHI",5700],["Kris Dunn","LAC",5700],["Brandin Podziemski","GSW",5700],["Paul Reed","DET",5600],["Khris Middleton","WAS",5600],["Nate Ament","MIL",5500],["Precious Achiuwa","SAC",5500],["De'Anthony Melton","GSW",5500],["Nikola Topic","OKC",5400],["Derik Queen","NOP",5400],["Noah Clowney","BKN",5400],["Kevin Porter Jr.","MIL",5400],["Landry Shamet","NYK",5400],["Kris Murray","MEM",5300],["Jordan Miller","LAC",5300],["Hannes Steinbach","CHA",5200],["Marcus Sasser","DAL",5200],["Devin Carter","ATL",5200],["Carter Bryant","SAS",5100],["Ben Sheppard","IND",5000],["Kenrich Williams","OKC",5000],["Dailyn Swain","CHI",5000],["Bub Carrington","WAS",4900],["Thomas Sorber","OKC",4900],["Brice Sensabaugh","UTA",4900],["Julian Strawther","DEN",4800],["Bennett Stirtz","OKC",4700],["Kel'el Ware","MIL",4700],["Yang Hansen","POR",4600],["Gui Santos","GSW",4600],["Jose Alvarado","NYK",4500],["Josh Minott","BKN",4500],["Ebuka Okorie","DET",4500],["Jared McCain","OKC",4400],["Joan Beringer","MIN",4400],["Christian Anderson Jr.","CHA",4300],["Dalton Knecht","LAL",4200],["Walter Clayton","MEM",4200],["Allen Graves","TOR",4100],["Nolan Traore","BKN",4000],["Ryan Rollins","MIL",4000],["Daniss Jenkins","DET",4000],["Tristan Da Silva","ORL",4000],["Miles McBride","NYK",4000],["Javonte Green","DET",3900],["Jayden Quaintance","SAS",3900],["DeAndre Jordan","NOP",3900],["LeBron James","PHI",3900],["Svi Mykhailiuk","UTA",3900],["Kasparas Jakucionis","MIL",3800],["Gary Harris","DET",3800],["Taurean Prince","DET",3800],["Pat Connaughton","CHA",3800],["Ja'Kobe Walter","TOR",3800],["Karim Lopez","MEM",3700],["Cole Anthony","MEM",3700],["Will Riley","WAS",3700],["Jaylon Tyson","CLE",3700],["Labaron Philon Jr.","PHI",3600],["Drake Powell","BKN",3500],["Yves Missi","NOP",3500],["Zuby Ejiofor","ATL",3500],["Olivier-Maxence Prosper","DAL",3500],["Dominick Barlow","PHI",3400],["Ariel Hukporti","PHI",3400],["Asa Newell","ATL",3400],["DaRon Holmes","DEN",3400],["Cameron Carr","LAL",3300],["Mo Bamba","UTA",3300],["Nique Clifford","OKC",3300],["AJ Johnson","NOP",3200],["Sergio de Larrea","DAL",3200],["Ron Harper Jr.","BOS",3200],["Jase Richardson","ORL",3100],["Kyshawn George","WAS",3100],["Nassir Little","PHX",3100],["Jaylen Clark","MIN",3100],["Tarris Reed Jr.","SAS",3100],["Ben Saraf","BKN",3000],["Tarik Biberovic","DAL",3000],["Kyle Filipowski","UTA",3000],["Chris Cenac Jr.","BOS",3000],["Pacome Dadiet","NYK",3000],["Joshua Jefferson","BKN",3000],["Alex Karaban","SAC",2900],["Danny Wolf","BKN",2900],["Koa Peat","PHX",2900],["Hugo Gonzalez","BOS",2900],["Liam McNeeley","CHA",2900],["Yanic Konan Niederhauser","LAC",2900],["Ajay Mitchell","OKC",2900],["Bones Hyland","MIN",2800],["Terrence Shannon Jr.","MIN",2800],["Micah Potter","POR",2800],["Jericho Sims","MIL",2800],["Luka Garza","BOS",2800],["Ryan Dunn","PHX",2800],["Isaiah Collier","UTA",2800],["Baylor Scheierman","BOS",2700],["Neemias Queta","BOS",2700],["Justin Champagnie","WAS",2700],["Vit Krejci","POR",2700],["Jay Huff","IND",2700],["Kobe Sanders","LAC",2600],["Jamaree Bouyea","PHX",2600],["Jamal Cain","ORL",2600],["Bryce McGowens","NOP",2600],["Jabari Walker","PHI",2600],["Dru Smith","MIA",2600],["Pete Nance","MIL",2500],["Sidy Cissoko","POR",2500],["Scotty Pippen Jr.","MEM",2500],["Moussa Diabate","CHA",2500],["Daeqwon Plowden","SAC",2400],["Isaiah Crawford","HOU",2400],["Anthony Gill","WAS",2400],["Kyle Anderson","TOR",2400],["Jordan McLaughlin","SAS",2400],["Branden Carlson","POR",2400],["Jevon Carter","ORL",2400],["Nikola Vucevic","ORL",2400],["Jordan Clarkson","NYK",2400],["Andre Drummond","NYK",2400],["Trey Lyles","MIN",2400],["Nick Richards","MIA",2400],["Simone Fontecchio","MIA",2400],["Matisse Thybulle","LAL",2400],["Ziaire Williams","LAL",2400],["Kevon Looney","LAL",2400],["Larry Nance Jr.","IND",2400],["Jae'Sean Tate","HOU",2400],["Bogdan Bogdanovic","HOU",2400],["Gary Payton II","GSW",2400],["Charles Bassey","GSW",2400],["DeMar DeRozan","DEN",2400],["Marvin Bagley III","DEN",2400],["Tyus Jones","DEN",2400],["Mario Hezonja","CLE",2400],["Thomas Bryant","CLE",2400],["Mike Conley","BOS",2400],["Ben Simmons","SAC",2400],["James Wiseman","NYK",2400],["Trendon Watford","NOP",2400],["Georges Niang","GSW",2400],["Brandon Williams","GSW",2400],["Cam Spencer","MEM",2400],["Justin Edwards","PHI",2400],["Tolu Smith","DET",2400],["Nae'Qwan Tomlin","CLE",2400],["Sion James","CHA",2400],["Ryan Kalkbrenner","CHA",2400],["Jordan Walsh","BOS",2400],["Trayce Jackson-Davis","TOR",2400],["GG Jackson II","MEM",2400],["Craig Porter Jr.","CLE",2400],["Leonard Miller","CHI",2400],["Mouhamed Gueye","ATL",2400],["Pelle Larsson","MIA",2300],["Oso Ighodaro","PHX",2300],["Jamal Shead","TOR",2300],["Tyler Kolek","NYK",2300],["Karlo Matkovic","NOP",2300],["Johnny Furphy","IND",2300],["Jamison Battle","TOR",2300],["Adem Bona","PHI",2300],["Jaylen Wells","MEM",2300],["Bronny James","LAL",2300],["Mohamed Diawara","NYK",2200],["JaVale McGee","DAL",2200],["Alijah Martin","TOR",2200],["Moussa Cisse","DAL",2200],["Rasheer Fleming","PHX",2200],["Maxime Raynaud","SAC",2200],["Noah Penda","ORL",2200],["Micah Peavy","MEM",2200],["Adou Thiero","LAL",2200],["Johni Broome","LAC",2200],["Will Richard","GSW",2200],["Chaz Lanier","DET",2200],["Tyrese Proctor","CLE",2200],["Ryan Nembhard","CHA",2200],["Myron Gardner","MIA",2200],["John Konchar","MIN",2100],["Cam Whitmore","CLE",1800],["Baba Miller","LAC",1700],["Isaiah Evans","MIN",1400],["Bogoljub Markovic","MIL",1400],["Meleek Thomas","CLE",1400],["Emanuel Sharp","SAC",1400],["Ryan Conwell","MIA",1400],["Henri Veesaar","ATL",1400],["Jaden Bradley","TOR",1400],["Bruce Thornton","HOU",1400],["Trevon Brazile","DEN",1400],["Khalifa Diop","CLE",1400],["Alpha Diallo","DEN",1400],["Haywood Highsmith","PHX",1000],["E.J. Liddell","PHX",700],["Vasilije Micic","MIL",700],["Mamadi Diakite","MEM",500],["Ricky Rubio","CLE",400],["Didi Louzada","POR",300],["Taj Gibson","NOP",100]]};
+const UPDATED='2026-11-10', DEADLINE='2027-02-11';
 const TEAMS={ATL:'Atlanta Hawks',BOS:'Boston Celtics',BKN:'Brooklyn Nets',CHA:'Charlotte Hornets',CHI:'Chicago Bulls',CLE:'Cleveland Cavaliers',DAL:'Dallas Mavericks',DEN:'Denver Nuggets',DET:'Detroit Pistons',GSW:'Golden State Warriors',HOU:'Houston Rockets',IND:'Indiana Pacers',LAC:'LA Clippers',LAL:'Los Angeles Lakers',MEM:'Memphis Grizzlies',MIA:'Miami Heat',MIL:'Milwaukee Bucks',MIN:'Minnesota Timberwolves',NOP:'New Orleans Pelicans',NYK:'New York Knicks',OKC:'Oklahoma City Thunder',ORL:'Orlando Magic',PHI:'Philadelphia 76ers',PHX:'Phoenix Suns',POR:'Portland Trail Blazers',SAC:'Sacramento Kings',SAS:'San Antonio Spurs',TOR:'Toronto Raptors',UTA:'Utah Jazz',WAS:'Washington Wizards'};
 const nick=t=>t==='POR'?'Trail Blazers':TEAMS[t].split(' ').pop();
 const $=id=>document.getElementById(id);
-const M=k=>k>=10000?'$'+(k/1000).toFixed(1)+'M':k>=1000?'$'+(k/1000).toFixed(1)+'M':'$'+Math.round(k)+'K';
-// Post-2024 usage rate by buying power, smoothed: (used+1)/(n+2)
-const RATE=[[2500,1/22],[5000,3/21],[10000,5/19],[1e12,8/16]];
-const rate=bp=>bp<=0?0:RATE.find(r=>bp<r[0])[1];
-const exp=s=>{const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})};
+const M=k=>k>=1000?'$'+(k/1000).toFixed(1)+'M':'$'+Math.round(k)+'K';
+const day=s=>new Date(s+'T12:00:00');
+const fmt=(s,y)=>day(s).toLocaleDateString('en-US',y?{month:'short',day:'numeric',year:'numeric'}:{month:'short',day:'numeric'});
+const TODAY=(()=>{const n=new Date();const u=day(UPDATED);return n>u?new Date(n.getFullYear(),n.getMonth(),n.getDate(),12):u})();
+const daysLeft=o=>Math.max(0,Math.round((day(o.e)-TODAY)/864e5));
+const LIVE=DATA.tpe.filter(o=>day(o.e)>=TODAY);
+// Share of exceptions used since 2024-25, by size (matches the chart below)
+const RATE=[[2500,0],[5000,11],[10000,24],[1e12,50]];
+const rate=o=>o.rule==='frozen'?0:RATE.find(r=>o.a<r[0])[1];
 const NONMIN=DATA.pl.filter(p=>p[2]>=2500);
 const fitsOf=o=>NONMIN.filter(p=>p[2]<=o.bp+250&&p[1]!==o.t);
+const kind=o=>o.rule==='frozen'?'frozen':o.bp<o.a-50?'capped':'full';
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
-let open=null,showAll=false;
-function status(o){
-  if(o.rule==='frozen')return ['frozen','Frozen'];
-  if(o.bp<o.a-50)return ['capped','Apron-limited'];
-  return ['full','Full value'];
+$('updated').textContent='Updated '+fmt(UPDATED,true);
+
+/* Summary sentence */
+(function(){
+  const face=LIVE.reduce((a,o)=>a+o.a,0),real=LIVE.reduce((a,o)=>a+o.bp,0);
+  const pre=LIVE.filter(o=>o.e<DEADLINE).length;
+  $('sum').innerHTML=LIVE.length+' exceptions worth $'+Math.round(face/1000)+'M on paper. <em>$'+Math.round(real/1000)+'M</em> they can actually use. <span>'+(pre?pre+' of them expire before the Feb. 11 deadline.':'All of them outlast the Feb. 11 deadline.')+'</span>';
+})();
+
+/* The clock: beeswarm by expiration date */
+let tipEl=$('tip');
+function clock(){
+  const W=880,L=24,R=24,bandTop=62,bandBot=266,axisY=280,H=330,vbY=0;
+  const end=new Date(Math.max(...LIVE.map(o=>+day(o.e)))+20*864e5);
+  const x=d=>L+(d-TODAY)/(end-TODAY)*(W-L-R);
+  const dX0=x(day(DEADLINE));
+  const maxA=Math.max(...LIVE.map(o=>o.a));
+  const rad=a=>3.5+Math.sqrt(a/maxA)*20;
+  const yc=(bandTop+bandBot)/2;
+  const pts=LIVE.map(o=>({o,tx:x(day(o.e)),r:rad(o.a),pre:o.e<DEADLINE})).sort((a,b)=>b.r-a.r);
+  // spiral candidates around the target, nearest first
+  const cand=[];for(let a=0,rr=0;rr<260;a+=0.35,rr+=0.22)cand.push([rr*Math.cos(a)*0.85,rr*Math.sin(a)]);
+  const placed=[];
+  pts.forEach(p=>{
+    for(const [dx,dy] of cand){const X=p.tx+dx,Y=yc+dy,g=1.6;
+      if(Y-p.r<bandTop||Y+p.r>bandBot||X-p.r<L||X+p.r>W-R)continue;
+      if(p.pre&&X+p.r>dX0-4)continue; if(!p.pre&&X-p.r<dX0+4)continue;
+      if(placed.some(q=>Math.hypot(q.x-X,q.y-Y)<q.r+p.r+g))continue;
+      p.x=X;p.y=Y;break}
+    if(p.x===undefined){p.x=p.tx;p.y=yc}
+    placed.push(p)});
+  const navy=css('--navy'),wood=css('--wood'),fro=css('--frozen'),ink=css('--ink'),sub=css('--sub'),red=css('--red'),rule=css('--rule'),paper=css('--wash');
+  let s='';
+  // months
+  const m0=new Date(TODAY.getFullYear(),TODAY.getMonth()+1,1);
+  for(let d=new Date(m0);d<end;d.setMonth(d.getMonth()+1)){const X=x(d);s+='<line x1="'+X+'" x2="'+X+'" y1="'+axisY+'" y2="'+(axisY+6)+'" stroke="'+sub+'"/>';s+='<text x="'+X+'" y="'+(axisY+24)+'" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" fill="'+sub+'">'+d.toLocaleDateString('en-US',{month:'short'})+(d.getMonth()===0?" '"+String(d.getFullYear()).slice(2):'')+'</text>'}
+  s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+axisY+'" y2="'+axisY+'" stroke="'+ink+'" stroke-width="2"/>';
+  s+='<text x="'+L+'" y="'+(axisY+44)+'" font-family="Barlow,sans-serif" font-size="13" fill="'+sub+'">Today</text>';
+  // deadline
+  const dX=x(day(DEADLINE));
+  if(day(DEADLINE)>TODAY){
+    s+='<line x1="'+dX+'" x2="'+dX+'" y1="'+(vbY+6)+'" y2="'+axisY+'" stroke="'+red+'" stroke-width="2.5" stroke-dasharray="7 5"/>';
+    const preL=LIVE.filter(o=>o.e<DEADLINE),pre=preL.length,preUse=Math.round(preL.reduce((a,o)=>a+o.bp,0)/1000);
+    s+='<text x="'+(dX+12)+'" y="'+(vbY+24)+'" font-family="Kalam,cursive" font-weight="700" font-size="21" fill="'+red+'" transform="rotate(-2 '+(dX+12)+' '+(vbY+24)+')">Trade deadline, Feb. 11</text>';
+    s+='<text x="'+(dX+12)+'" y="'+(vbY+48)+'" font-family="Kalam,cursive" font-size="18" fill="'+red+'" transform="rotate(-2 '+(dX+12)+' '+(vbY+48)+')">'+pre+' expire before it, $'+preUse+'M usable</text>';
+    s+='<path d="M'+(dX+8)+' '+(vbY+56)+' q -10 4 -20 14" fill="none" stroke="'+red+'" stroke-width="2" stroke-linecap="round"/><path d="M'+(dX-12)+' '+(vbY+70)+' l 2 -9 m -2 9 l 9 -3" stroke="'+red+'" stroke-width="2" stroke-linecap="round" fill="none"/>';
+  }
+  // dots
+  placed.forEach((p,i)=>{const o=p.o,k=kind(o),f=o.bp/o.a;
+    const lbl=nick(o.t)+', '+o.p+': '+M(o.bp)+' usable of '+M(o.a)+', expires '+fmt(o.e,true);
+    s+='<g class="dot" tabindex="0" role="button" aria-label="'+lbl.replace(/"/g,'&quot;')+'" data-key="'+o.t+o.p+'">';
+    if(k==='frozen'){s+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+p.r+'" fill="'+fro+'"/>'}
+    else{s+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+p.r+'" fill="'+wood+'"/>';
+      if(f>0.995)s+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+p.r+'" fill="'+navy+'"/>';
+      else{const a=f*2*Math.PI,x1=p.x+p.r*Math.sin(a),y1=p.y-p.r*Math.cos(a);s+='<path d="M'+p.x+' '+p.y+' L'+p.x+' '+(p.y-p.r)+' A'+p.r+' '+p.r+' 0 '+(f>.5?1:0)+' 1 '+x1+' '+y1+' Z" fill="'+navy+'"/>'}}
+    s+='<circle class="ring" cx="'+p.x+'" cy="'+p.y+'" r="'+(p.r+1)+'" fill="none" stroke="'+paper+'" stroke-width="1.5"/>';
+    if(p.r>17)s+='<text x="'+p.x+'" y="'+(p.y+5)+'" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="'+Math.min(16,p.r*.62)+'" fill="#fff" pointer-events="none">'+o.t+'</text>';
+    s+='</g>'});
+  $('clock').innerHTML='<svg viewBox="0 '+vbY+' '+W+' '+H+'" aria-label="Open trade exceptions by expiration date">'+s+'</svg>';
+  $('clock').querySelectorAll('.dot').forEach(g=>{
+    const o=LIVE.find(q=>q.t+q.p===g.dataset.key);
+    const show=e=>{tipEl.innerHTML='<b>'+nick(o.t)+'</b>, '+o.p+'<br>'+(o.rule==='frozen'?'Frozen, '+M(o.a)+' on paper':M(o.bp)+' usable of '+M(o.a))+'<br>Expires '+fmt(o.e,true);tipEl.style.opacity=1;const r=(e.clientX!==undefined&&e.type!=='focus')?{x:e.clientX,y:e.clientY}:(()=>{const b=g.getBoundingClientRect();return{x:b.left+b.width/2,y:b.top}})();tipEl.style.left=Math.min(innerWidth-250,Math.max(8,r.x+12))+'px';tipEl.style.top=(r.y-70)+'px'};
+    const hide=()=>{tipEl.style.opacity=0};
+    g.addEventListener('mousemove',show);g.addEventListener('mouseleave',hide);g.addEventListener('focus',show);g.addEventListener('blur',hide);
+    const go=()=>{hide();jump(o)};g.addEventListener('click',go);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});
+  });
 }
+
+/* List */
+let open=null,showAll=false;
 function lead(o){const T=nick(o.t);
-  if(o.rule==='frozen')return 'Frozen. The '+T+' are above an apron, so they can\'t use it unless they cut payroll first.';
+  if(o.rule==='frozen')return 'Frozen. The '+T+' are above an apron, so they can\'t touch it unless they cut payroll first.';
   if(o.bp<o.a-50)return 'Worth '+M(o.bp)+', not '+M(o.a)+'. The '+T+' are '+M(o.lim)+' under their apron limit, and using it can\'t push them past that.';
   return 'The '+T+' can use all '+M(o.a)+' of it.';
 }
 function detail(o){
-  const f=fitsOf(o),pct=Math.round(rate(o.bp)*100),T=nick(o.t);
+  const f=fitsOf(o),pct=rate(o),T=nick(o.t);
   const ex=f.slice(0,4).map(p=>p[0]+' ('+M(p[2])+')').join(', ');
-  const note=o.rule==='frozen'?'Dead money unless something changes.':pct>=40?'This one has a real shot at being used.':pct>=20?'Coin flip at best. History says probably not.':'History says this one expires unused.';
+  const note=o.rule==='frozen'?'Dead money unless something changes.':pct>=40?'This one has a real shot at getting used.':pct>=20?'Coin flip at best. History says probably not.':'History says this one expires unused.';
   return '<div class="detail"><p class="lead">'+lead(o)+'</p>'
-   +'<p>Created when the '+T+' traded '+o.p+'. Expires '+exp(o.e)+', '+o.d+' days from now.'+(o.u?' Already used in part on '+o.u+'.':'')+'</p>'
-   +'<div class="meter"><span style="width:'+Math.round(o.bp/o.a*100)+'%"></span></div><div class="meterlab"><span>Usable '+M(o.bp)+'</span><span>Face value '+M(o.a)+'</span></div>'
-   +'<p class="fits">'+(f.length?'It could absorb '+f.length+' of the league\'s '+NONMIN.length+' contracts above the minimum, as big as '+ex+'.':'It can\'t absorb a single contract above the minimum. Minimum deals can be traded for without an exception anyway.')+'</p>'
-   +(o.rule!=='frozen'&&o.pay+o.bp>221686?'<p>Using all of it would put the '+T+' about '+M(o.pay+o.bp-221686)+' over the second apron, where the tax bill gets steep.</p>':'')+'<p>Exceptions this size have been used <b>'+pct+'%</b> of the time since 2024-25.</p><p class="note">'+note+'</p></div>';
+   +'<p>Created when the '+T+' traded '+o.p+'. Expires '+fmt(o.e,true)+', '+daysLeft(o)+' days from now.'+(o.u?' Already used in part on '+o.u+'.':'')+'</p>'
+   +'<p>'+(f.length?'It could absorb '+f.length+' of the league\'s '+NONMIN.length+' contracts above the minimum, as big as '+ex+'.':'It can\'t absorb a single contract above the minimum. Minimum deals can be traded for without an exception anyway.')+'</p>'
+   +(o.rule!=='frozen'&&o.pay+o.bp>221686?'<p>Using all of it would put the '+T+' about '+M(o.pay+o.bp-221686)+' over the second apron, where the tax bill gets steep.</p>':'')
+   +'<p>Since 2024-25, '+(o.rule==='frozen'?'frozen exceptions have essentially never been used.':pct+'% of exceptions this size have been used at all.')+'</p><p class="note">'+note+'</p></div>';
 }
-function render(){
-  const team=$('team').value;const ul=$('list');ul.innerHTML='';
-  const rows=DATA.tpe.filter(o=>!team||o.t===team).sort((a,b)=>b.bp-a.bp||b.a-a.a);
+function render(flashKey){
+  const team=$('team').value,ul=$('list');ul.innerHTML='';
+  const rows=LIVE.filter(o=>!team||o.t===team).sort((a,b)=>b.bp-a.bp||b.a-a.a);
   $('listTitle').textContent=team?TEAMS[team]:'Every open exception';
-  if(!rows.length){ul.innerHTML='<li class="row"><div class="detail"><p>The '+nick(team)+' have no open trade exceptions.</p></div></li>';return}
+  if(!rows.length){ul.innerHTML='<li class="row"><div class="detail" style="padding-left:4px"><p>The '+nick(team)+' don\'t have any open trade exceptions.</p></div></li>';return}
   const show=team||showAll?rows:rows.slice(0,15);
-  show.forEach(o=>{const li=document.createElement('li');li.className='row';const s=status(o);const key=o.t+o.p;
+  show.forEach(o=>{const key=o.t+o.p,k=kind(o),dl=daysLeft(o);
+    const li=document.createElement('li');li.className='row'+(flashKey===key?' flash':'');li.id='x-'+key.replace(/\W/g,'');
     const b=document.createElement('button');b.type='button';b.setAttribute('aria-expanded',String(open===key));
-    b.innerHTML='<div><div class="n">'+(team?'':nick(o.t)+' · ')+o.p+'<span class="tag '+s[0]+'">'+s[1]+'</span></div><div class="d">'+M(o.a)+' face value · expires '+exp(o.e)+' · '+Math.round(rate(o.bp)*100)+'% chance used</div></div><div class="r"><div class="big'+(o.bp<=0?' zero':'')+'">'+M(o.bp)+'</div><div class="d">can absorb</div></div>';
+    const when=dl<=100?'<span class="soon">expires '+fmt(o.e)+'</span>':'expires '+fmt(o.e,true);
+    const tag=k==='frozen'?'frozen, ':k==='capped'?'apron-limited, ':'';
+    b.innerHTML='<div class="abbr">'+o.t+'</div><div><div class="who">'+o.p+'</div><div class="meta">'+M(o.a)+' on paper, '+tag+when+'</div><div class="bar'+(k==='frozen'?' frozen':'')+'"><span style="width:'+(k==='frozen'?0:o.bp/o.a*100)+'%"></span></div></div><div class="val'+(o.bp<=0?' zero':'')+'"><b>'+M(o.bp)+'</b><small>can absorb</small></div>';
     b.addEventListener('click',()=>{open=open===key?null:key;render()});li.appendChild(b);
-    if(open===key){li.insertAdjacentHTML('beforeend',detail(o))}
+    if(open===key)li.insertAdjacentHTML('beforeend',detail(o));
     ul.appendChild(li)});
-  if(!team&&!showAll){const li=document.createElement('li');li.className='row';const b=document.createElement('button');b.type='button';b.innerHTML='<div class="n">Show all '+rows.length+' exceptions</div><div></div>';b.addEventListener('click',()=>{showAll=true;render()});li.appendChild(b);ul.appendChild(li)}
+  if(!team&&!showAll){const li=document.createElement('li');li.className='row more';const b=document.createElement('button');b.type='button';b.textContent='Show all '+rows.length+' exceptions';b.addEventListener('click',()=>{showAll=true;render()});li.appendChild(b);ul.appendChild(li)}
 }
-function chart(){
+function jump(o){$('team').value='';showAll=true;open=o.t+o.p;render(open);const el=$('x-'+(o.t+o.p).replace(/\W/g,''));if(el){el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'center'});el.querySelector('button').focus({preventScroll:true})}}
+
+/* Usage chart */
+function usage(){
   const B=['Under $2.5M','$2.5M to $5M','$5M to $10M','Over $10M'],pre=[8,39,45,67],post=[0,11,24,50];
-  const css=getComputedStyle(document.documentElement),ink=css.getPropertyValue('--ink').trim(),pen=css.getPropertyValue('--pen').trim(),bar=css.getPropertyValue('--bar').trim(),sub=css.getPropertyValue('--sub').trim(),line=css.getPropertyValue('--line').trim();
-  const W=720,H=300,x0=20,y0=40,y1=240,gw=(W-40)/4;let s='<line x1="'+x0+'" x2="'+(W-20)+'" y1="'+y1+'" y2="'+y1+'" stroke="'+line+'"/>';
-  const Y=v=>y1-v/100*(y1-y0);
-  B.forEach((b,i)=>{const cx=x0+gw*i+gw/2,w=gw*0.3;
-    [[pre[i],bar,cx-w-3],[post[i],pen,cx+3]].forEach(([v,c,x])=>{s+='<rect x="'+x+'" y="'+Y(v)+'" width="'+w+'" height="'+(y1-Y(v))+'" fill="'+c+'"/><text x="'+(x+w/2)+'" y="'+(Y(v)-8)+'" text-anchor="middle" font-family="Roboto Condensed,Arial Narrow,sans-serif" font-weight="800" font-size="20" fill="'+ink+'">'+v+'%</text>'});
-    s+='<text x="'+cx+'" y="'+(y1+22)+'" text-anchor="middle" font-size="13" fill="'+sub+'">'+b+'</text>'});
-  s+='<rect x="'+x0+'" y="6" width="12" height="12" fill="'+bar+'"/><text x="'+(x0+18)+'" y="17" font-size="13" fill="'+sub+'">Before the aprons (2020-21 to 2023-24)</text>';
-  s+='<rect x="'+(x0+300)+'" y="6" width="12" height="12" fill="'+pen+'"/><text x="'+(x0+318)+'" y="17" font-size="13" fill="'+sub+'">Since 2024-25</text>';
-  s+='<text x="'+x0+'" y="'+(H-14)+'" font-size="12" fill="'+sub+'">272 exceptions. Ones wiped out by offseason cap space are excluded.</text>';
-  $('chart').innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Trade exception usage rate by size, before and after the aprons">'+s+'</svg>';
+  const ink=css('--ink'),wood=css('--wood'),navy=css('--navy'),sub=css('--sub'),red=css('--red'),rule=css('--rule');
+  const W=760,H=320,x0=10,y0=70,y1=262,gw=(W-20)/4,Y=v=>y1-v/100*(y1-y0);
+  let s='<line x1="'+x0+'" x2="'+(W-10)+'" y1="'+y1+'" y2="'+y1+'" stroke="'+ink+'" stroke-width="2"/>';
+  B.forEach((b,i)=>{const cx=x0+gw*i+gw/2,w=gw*.3;
+    [[pre[i],wood,cx-w-4],[post[i],navy,cx+4]].forEach(([v,c,x])=>{s+='<rect x="'+x+'" y="'+Y(v)+'" width="'+w+'" height="'+Math.max(0,y1-Y(v))+'" rx="3" fill="'+c+'"/><text x="'+(x+w/2)+'" y="'+(Y(v)-8)+'" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="22" fill="'+ink+'">'+v+'%</text>'});
+    s+='<text x="'+cx+'" y="'+(y1+24)+'" text-anchor="middle" font-family="Barlow,sans-serif" font-size="14" fill="'+sub+'">'+b+'</text>'});
+  s+='<rect x="'+x0+'" y="8" width="13" height="13" rx="2" fill="'+wood+'"/><text x="'+(x0+20)+'" y="19" font-family="Barlow,sans-serif" font-size="14" fill="'+sub+'">Before the aprons, 2020-21 to 2023-24</text>';
+  s+='<rect x="'+(x0+290)+'" y="8" width="13" height="13" rx="2" fill="'+navy+'"/><text x="'+(x0+310)+'" y="19" font-family="Barlow,sans-serif" font-size="14" fill="'+sub+'">Since 2024-25</text>';
+  const ax=x0+gw*0.5+8;
+  s+='<text x="'+(ax+26)+'" y="'+(y1-58)+'" font-family="Kalam,cursive" font-weight="700" font-size="20" fill="'+red+'" transform="rotate(-3 '+(ax+26)+' '+(y1-58)+')">0 for 20</text>';
+  s+='<path d="M'+(ax+22)+' '+(y1-52)+' q -14 10 -16 30" fill="none" stroke="'+red+'" stroke-width="2" stroke-linecap="round"/>';
+  s+='<text x="'+x0+'" y="'+(H-12)+'" font-family="Barlow,sans-serif" font-size="13" fill="'+sub+'">272 exceptions. Ones wiped out by offseason cap space are left out.</text>';
+  $('usage').innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Trade exception usage rate by size, before and since the aprons. Under $2.5M: 8% before, 0% since. $2.5M to $5M: 39% before, 11% since. $5M to $10M: 45% before, 24% since. Over $10M: 67% before, 50% since.">'+s+'</svg>';
 }
-const face=DATA.tpe.reduce((a,o)=>a+o.a,0),real=DATA.tpe.reduce((a,o)=>a+o.bp,0);
-$('tFace').textContent='$'+Math.round(face/1000)+'M';$('tReal').textContent='$'+Math.round(real/1000)+'M';
-[...new Set(DATA.tpe.map(o=>o.t))].sort((a,b)=>TEAMS[a].localeCompare(TEAMS[b])).forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=TEAMS[t];$('team').appendChild(o)});
+
+[...new Set(LIVE.map(o=>o.t))].sort((a,b)=>TEAMS[a].localeCompare(TEAMS[b])).forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=TEAMS[t];$('team').appendChild(o)});
 $('team').addEventListener('change',()=>{open=null;render()});
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change',chart);
-render();chart();
+const redraw=()=>{clock();usage()};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+document.fonts&&document.fonts.ready.then(redraw);
+render();redraw();
 </script>
+</body>
+</html>
